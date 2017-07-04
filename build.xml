@@ -1,0 +1,54 @@
+<project name="fits" default="dist" basedir=".">
+
+  <!-- set global properties for this build -->
+  <property name="SRC" location="src"/>
+  <property name="BUILD" location="build"/>
+  <property name="DIST" location="dist"/>
+  <property name="DOC" location="doc"/>
+  <property name="LIB" location="../lib"/>
+
+  <property name="MCGLYNN_CLASSES" location="${LIB}/fits.jar:${LIB}/util.jar:${LIB}/image.jar"/>
+  <property name="CLASSPATH" location="${SRC}:${MCGLYNN_CLASSES}"/>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${BUILD}"/>
+  </target>
+
+  <target name="compile-all" depends="compile-fits"/>
+
+  <target name="compile-fits" depends="init">
+    <javac debug="on" classpath="${CLASSPATH}" srcdir="${SRC}" destdir="${BUILD}"/>
+  </target>
+
+  <target name="src" depends="init,doc">
+    <mkdir dir="${DIST}/lib"/>
+    <jar destfile="${DIST}/lib/ivoafits-src-${DSTAMP}.jar" basedir="." includes="src/**/*.java doc/** build.xml" excludes="*CVS*"/>
+  </target>
+
+  <target name="dist" depends="compile-all">
+    <mkdir dir="${DIST}/lib"/>
+    <jar destfile="${DIST}/lib/ivoafits-${DSTAMP}.jar" basedir="${BUILD}">
+      <manifest>
+        <attribute name="Main-Class" value="edu/jhu/pha/sdss/fits/FITSTest"/>
+        <!-- <attribute name="Class-Path" value="Mirage1.0.jar Mirage0.3.jar"/> -->
+      </manifest>
+      <!-- McGlynn FITS classes -->
+      <zipfileset src="${LIB}/fits.jar"/>
+      <zipfileset src="${LIB}/util.jar"/>
+      <!-- <zipfileset src="${LIB}/hcompress.jar"/> -->
+      <zipfileset src="${LIB}/image.jar"/>
+    </jar>
+  </target>
+
+  <target name="doc">
+    <javadoc destdir="${DOC}" classpath="${CLASSPATH}" additionalparam="-breakiterator -public"> <!-- public="true"> -->
+      <fileset dir="${SRC}"/>
+    </javadoc>
+  </target>
+
+  <target name="clean">
+    <delete dir="${BUILD}"/>
+    <delete dir="${DIST}"/>
+  </target>
+</project>
